@@ -4,6 +4,7 @@ This Node.js script demonstrates how to:
 - Load HTML content either from a local file or fetch it from a remote URL (`https://example.com`).
 - Parse and extract content using `jsdom`.
 - Launch a headless browser using `puppeteer` to extract content dynamically rendered in the browser.
+- Generates `page.pdf` from the HTML file using Puppeteer.
 
 ## 📦 Technologies Used
 - [Node.js](https://nodejs.org/)
