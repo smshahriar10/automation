@@ -1,24 +1,33 @@
 import fs from 'fs';
+import { JSDOM } from 'jsdom';
+import puppeteer from 'puppeteer';
 
-const exists = await fs.promises.access('example.html', fs.constants.F_OK)
-  .then(() => true).catch(() => false);
+// Step 1: Check for any .html file in the current directory
+const files = await fs.promises.readdir('.');
+const htmlFile = files.find(file => file.endsWith('.html'));
+const filename = htmlFile || 'example.html';
+
 let data;
-if (exists) {
-  data = await fs.promises.readFile('example.html', 'utf-8');
+
+if (htmlFile) {
+  data = await fs.promises.readFile(filename, 'utf-8');
 } else {
-  data = await fetch('https://example.com')
-    .then(response => response.text());
-  fs.promises.writeFile('example.html', data);
+  data = await fetch('https://example.com').then(res => res.text());
+  await fs.promises.writeFile(filename, data);
+  console.log(`Fetched and saved as ${filename}`);
 }
 
-import { JSDOM } from 'jsdom';
+// Step 2: Parse HTML with JSDOM
 const dom = new JSDOM(data);
 const document = dom.window.document;
-console.log(document.querySelector("a").href);
+const firstLink = document.querySelector("a")?.href || 'No link found';
+console.log('First link href:', firstLink);
 
-import puppeteer from 'puppeteer';
+// Step 3: Create a PDF using Puppeteer
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
-console.log(await page.evaluate(() => document.querySelector('h1')?.innerText));
-await page.close();
+await page.setContent(data, { waitUntil: 'networkidle0' });
+await page.pdf({ path: 'page.pdf', format: 'A4' });
 await browser.close();
+
+console.log('✅ PDF created: page.pdf');
