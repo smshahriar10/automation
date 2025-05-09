@@ -15,5 +15,5 @@ This Node.js script demonstrates how to:
 1. **Install dependencies**:
    ```bash
    npm install jsdom puppeteer
-   node parse.js
+   node parse.ts
    ```
